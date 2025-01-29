@@ -4,4 +4,4 @@ Shiny app for making salary predictions for new cases from previously trained mo
 
 This is a simple and minimal Shiny App created with Shiny for Python (Core).
 
-The deployed app can be found [here](https://mpru.shinyapps.io/shiny_salary/).
+The deployed app can be found [here](https://mpru.shinyapps.io/salary_pred_app/).
