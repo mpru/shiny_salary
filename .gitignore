@@ -1,0 +1,4 @@
+rsconnect-python/
+model_outputs/mod_distilbert/
+model_outputs/tokenizador/
+__pycache__/
