@@ -73,10 +73,7 @@ app_ui = ui.page_fluid(
         "calculate_button", "Calculate predictions",
         style="background-color: #4a4a4a; color: white; margin-bottom: 20px;"
     ),
-    ui_card(
-        "Predictions",
-        ui.output_table("predictions"),
-    ),
+    ui.output_ui("show_predictions"), # card de predicciones, aparece si se hace clic en el boton
     ui.div(
         "Created by Marcos Prunello with Shiny for Python", 
         align = "center", 
@@ -87,6 +84,9 @@ app_ui = ui.page_fluid(
 
 # Lógica del servidor
 def server(input, output, session):
+
+    # aca guardo el dataframe con predicciones que genera el server, para poder usarlo en otros lugares, es un reactive value
+    val = reactive.value(pd.DataFrame())
 
     # Actualizar la sección de entrada según la fuente seleccionada
     @output
@@ -204,14 +204,25 @@ def server(input, output, session):
             predictions = predict_transformer_from_pd(data)
             data.insert(loc = 0, column = "predicted_salary", value = np.round(predictions))
 
+        val.set(data)
+        
         return data
 
-    # Solo muestra las predicciones cuando se hace clic en el botón
+    # Descargar CSV con predicciones
+    @session.download(filename = "predictions.csv")
+    def download_predictions():
+        yield val.get().to_csv(index=False)
+    
+    # Solo muestra la card de predicciones cuando se hace clic en el botón
     @output
     @render.ui
     def show_predictions():
         if input.calculate_button() > 0:  # El botón fue presionado
-            return ui.div(ui.output_table("predictions"))
+            return ui_card(
+                "Predictions",
+                ui.output_table("predictions"),
+                ui.download_button("download_predictions", "Download CSV with predictions")
+            )
         return ui.div()
 
 # Crear la app
